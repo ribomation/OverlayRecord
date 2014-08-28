@@ -1,17 +1,13 @@
 
-
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 
-
 int main() {
-    CppUnit::Test*  suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
+    CppUnit::TestFactoryRegistry&	registry = CppUnit::TestFactoryRegistry::getRegistry();
+    CppUnit::TextUi::TestRunner 	runner;
+    runner.addTest( registry.makeTest() );
     
-    CppUnit::TextUi::TestRunner runner;
-    runner.addTest( suite );
     bool wasSucessful = runner.run();    
-
     return wasSucessful ? 0 : 1;
 }
-
