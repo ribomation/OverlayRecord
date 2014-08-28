@@ -19,3 +19,8 @@
 *.exe
 *.out
 *.app
+
+# Gradle output
+build/
+
+
