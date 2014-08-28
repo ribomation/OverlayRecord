@@ -17,7 +17,7 @@
 #include <type_traits>
 #include <cstring>
 
-namespace SEBIS {
+namespace ribomation {
 
     // -----------------------------------------------------
     // --- Exceptions
@@ -51,14 +51,14 @@ namespace SEBIS {
     // -----------------------------------------------------
     // --- Type Aliases
     // -----------------------------------------------------
-    typedef size_t      FieldSize;
-    typedef size_t      RecordSize;
+    typedef unsigned      FieldSize;
 
 
     // -----------------------------------------------------
     // --- class FieldBase
     // -----------------------------------------------------
-    class Record; //forward
+    class Record; //forward decl
+    
     struct FieldBase {
         Record*     record = nullptr;
         unsigned    fieldOffset = 0;
@@ -100,14 +100,6 @@ namespace SEBIS {
 
     public:
         Record() = default;
-
-        /**
-         * Creates a record and save settings to the storage start and end.
-         * @deprecated
-         */
-        Record(char* buf, FieldSize _size)  {
-            std::cerr << "Record::Record(char*, FieldSize) is deprecated" << std::endl;
-        }
 
         virtual ~Record() {
             disposeDynamicBuffer();
@@ -212,13 +204,13 @@ namespace SEBIS {
         /**
          * A record consists of one or more Field members.
          */
-        template<typename FieldType, FieldSize field_size, typename converter>
+        template<typename FieldType, unsigned field_size, typename converter>
         class Field : public FieldBase {
 
 
         public:
             typedef FieldType       TYPE;
-            static const FieldSize  SIZE = field_size;
+            static const unsigned  SIZE = field_size;
 
             void init(Record* record, unsigned offset) {
                 this->record      = record;
@@ -249,7 +241,7 @@ namespace SEBIS {
              * @param f     place this field relative to the field
              * @param alignStart    if true align with beginning of f, else align its end
              */
-            template<typename T, FieldSize N, typename C>
+            template<typename T, unsigned N, typename C>
             Field(Record* record, const Field<T, N, C>& alignField, bool alignStart = true) {
                 init(record, alignField.fieldOffset + (alignStart ? 0 : alignField.fieldOffset));
             }
@@ -271,7 +263,7 @@ namespace SEBIS {
             /**
              * Returns its size in number of bytes.
              */
-            FieldSize size() const {
+            unsigned size() const {
                 return fieldSize;
             }
 
@@ -335,7 +327,7 @@ namespace SEBIS {
                 }
             }
 
-            template<typename T, FieldSize N, typename C>
+            template<typename T, unsigned N, typename C>
             Array(Record* record, const Field<T, N, C>& alignField, bool alignStart = true) {
                 if (COUNT < 1) throw IndexOutOfBounds(0, COUNT);
 
@@ -423,7 +415,7 @@ namespace SEBIS {
                 init(record, record->getLastOffset());
             }
 
-            template<typename T, FieldSize N, typename C>
+            template<typename T, unsigned N, typename C>
             Embed(Record* record, const Field<T, N, C>& alignField, bool alignStart = true) {
                 init(record, alignField.fieldOffset + (alignStart ? 0 : alignField.fieldOffset));
             }
@@ -449,7 +441,7 @@ namespace SEBIS {
             /**
              * Returns its size in number of bytes.
              */
-            FieldSize size() const {
+            unsigned size() const {
                 return fieldSize;
             }
 
@@ -461,12 +453,12 @@ namespace SEBIS {
         // -----------------------------------------------------
         template<char PAD = ' '>
         struct TextConverter {
-            static void toStorage(std::string& v, char* offset, FieldSize size) {
+            static void toStorage(std::string& v, char* offset, unsigned size) {
                 std::fill_n(offset, size, PAD);
                 v.copy(offset, size);
             }
 
-            static std::string fromStorage(char* offset, FieldSize size) {
+            static std::string fromStorage(char* offset, unsigned size) {
                 return std::string(offset, offset + size);
             }
         };
@@ -554,12 +546,12 @@ namespace SEBIS {
         template<typename Type> using BinaryType =
         Field<Type, sizeof(Type), BinaryConverter<Type>>;
 
-        using BinaryInteger  = BinaryType<int>;
-        using BinaryFloat    = BinaryType<float>;
-        using BinaryDouble   = BinaryType<double>;
-        using Byte           = BinaryType<char>;
-        using Word           = BinaryType<short>;
-        using QUAD           = BinaryType<long long>;
+        using Integer  = BinaryType<int>;
+        using Float    = BinaryType<float>;
+        using Double   = BinaryType<double>;
+        using Byte     = BinaryType<char>;
+        using Word     = BinaryType<short>;
+        using QUAD     = BinaryType<long long>;
     };
 
     /**
@@ -581,6 +573,6 @@ namespace SEBIS {
         return is;
     }
 
-}  // namespace SEBIS
+} 
 
 #endif /* RECORD_HPP_ */
