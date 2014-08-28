@@ -1,0 +1,53 @@
+
+apply plugin: 'cpp'
+
+executables {
+    unitTests {
+        binaries.all {
+            if (toolChain in Gcc) {
+                linker.args "-o", "build/unit-tests"
+            }
+        }
+    }
+    
+}
+
+binaries.all {
+    if (toolChain in Gcc) {
+        cppCompiler.args '-g', '-std=c++11', '-Wall', '-fmax-errors=1'
+    }
+}
+
+sources {
+    unitTests {
+        cpp {
+            source {
+                srcDirs 'src/unit-test/cpp'
+                include '**/*.cpp'
+            }
+            exportedHeaders {
+                srcDirs "src/main/incl"
+                include '**/*.hpp'
+            }
+        }
+    }
+    
+}
+
+
+task docs(type:Exec) {
+    commandLine 'doxygen'
+}
+
+task _wrapper(type: Wrapper) {
+    gradleVersion = '2.1-rc-1'    
+}
+task wrapper << {
+    "/bin/rm -f gradlew.bat".execute().waitFor()
+}
+wrapper.dependsOn _wrapper
+
+
+
+
+

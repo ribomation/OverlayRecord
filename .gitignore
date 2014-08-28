@@ -22,5 +22,13 @@
 
 # Gradle output
 build/
+.gradle/
+
+# Eclipse files
+.project
+.cproject
+.settings/
+
+
 
 
