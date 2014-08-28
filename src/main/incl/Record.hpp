@@ -44,7 +44,8 @@ namespace ribomation {
     };
 
     struct UnInitialized : public std::logic_error {
-        UnInitialized() : std::logic_error("UnInitialized") {}
+        UnInitialized() : std::logic_error("Have you forgotten to append '= {this};' to your fields") {}
+        UnInitialized(std::string msg) : std::logic_error(msg) {}
     };
 
 
