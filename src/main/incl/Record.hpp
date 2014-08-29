@@ -244,7 +244,7 @@ namespace ribomation {
              */
             template<typename T, unsigned N, typename C>
             Field(Record* record, const Field<T, N, C>& alignField, bool alignStart = true) {
-                init(record, alignField.fieldOffset + (alignStart ? 0 : alignField.fieldOffset));
+                init(record, alignField.fieldOffset + (alignStart ? 0 : alignField.fieldSize));
             }
 
             /**
@@ -332,7 +332,7 @@ namespace ribomation {
             Array(Record* record, const Field<T, N, C>& alignField, bool alignStart = true) {
                 if (COUNT < 1) throw IndexOutOfBounds(0, COUNT);
 
-                unsigned offset = alignField.fieldOffset + (alignStart ? 0 : alignField.fieldOffset);
+                unsigned offset = alignField.fieldOffset + (alignStart ? 0 : alignField.fieldSize);
                 items[0].init(record, offset);
                 for (int k = 1; k < COUNT; ++k) {
                     items[k].init(record, record->getLastOffset());
@@ -418,7 +418,7 @@ namespace ribomation {
 
             template<typename T, unsigned N, typename C>
             Embed(Record* record, const Field<T, N, C>& alignField, bool alignStart = true) {
-                init(record, alignField.fieldOffset + (alignStart ? 0 : alignField.fieldOffset));
+                init(record, alignField.fieldOffset + (alignStart ? 0 : alignField.fieldSize));
             }
 
             RecordType*     operator ->() const {
@@ -460,7 +460,10 @@ namespace ribomation {
             }
 
             static std::string fromStorage(char* offset, unsigned size) {
-                return std::string(offset, offset + size);
+            	std::string  payload(offset, offset + size);
+            	std::string  result(size, PAD);
+            	for (int k=0; k<payload.size(); ++k) if (payload[k]) result[k] = payload[k];
+            	return result;
             }
         };
 
@@ -494,40 +497,61 @@ namespace ribomation {
         // -----------------------------------------------------
         // --- Character converter functors
         // -----------------------------------------------------
+        struct TO_SHORT {
+            short operator()(const std::string& s) {
+            	if (s.empty()) return 0;
+                try { return static_cast<short>(std::stoi(s)); }
+                catch (std::invalid_argument& e) {return 0;}
+            }
+        };
         struct TO_INT {
             int operator()(const std::string& s) {
-                return std::stoi(s);
+            	if (s.empty()) return 0;
+                try { return std::stoi(s); }
+                catch (std::invalid_argument& e) {return 0;}
             }
         };
         struct TO_LONG {
             long operator()(const std::string& s) {
-                return std::stol(s);
+            	if (s.empty()) return 0;
+                try { return std::stol(s); }
+                catch (std::invalid_argument& e) {return 0;}
             }
         };
         struct TO_LONG_LONG {
             long long operator()(const std::string& s) {
-                return std::stoll(s);
+            	if (s.empty()) return 0;
+                try { return std::stoll(s); }
+                catch (std::invalid_argument& e) {return 0;}
             }
         };
         struct TO_UNSIGNED_LONG {
             unsigned long operator()(const std::string& s) {
-                return std::stoul(s);
+            	if (s.empty()) return 0;
+            	try { return std::stoul(s); }
+            	catch (std::invalid_argument& e) {return 0;}
             }
         };
 
         struct TO_FLOAT {
             float operator()(const std::string& s) {
-                return std::stof(s);
+            	if (s.empty()) return 0;
+                try { return std::stof(s); }
+                catch (std::invalid_argument& e) {return 0;}
             }
         };
         struct TO_DOUBLE {
             double operator()(const std::string& s) {
-                return std::stod(s);
+            	if (s.empty()) return 0;
+                try { return std::stod(s); }
+                catch (std::invalid_argument& e) {return 0;}
             }
         };
         struct TO_LONG_DOUBLE {
             long double operator()(const std::string& s) {
-                return std::stold(s);
+            	if (s.empty()) return 0;
+                try { return std::stold(s); }
+                catch (std::invalid_argument& e) {return 0;}
             }
         };
 
@@ -547,12 +571,20 @@ namespace ribomation {
         template<typename Type> using BinaryType =
         Field<Type, sizeof(Type), BinaryConverter<Type>>;
 
+        using Byte     = BinaryType<char>;
+        using Short    = BinaryType<int>;
         using Integer  = BinaryType<int>;
+        using Long     = BinaryType<long>;
+
         using Float    = BinaryType<float>;
         using Double   = BinaryType<double>;
-        using Byte     = BinaryType<char>;
+        using Quadruple   = BinaryType<long double>;
+
         using Word     = BinaryType<short>;
         using QUAD     = BinaryType<long long>;
+
+        template<int size>
+        using Blob	   = Field<char, size, TextConverter<>>;
     };
 
     /**
