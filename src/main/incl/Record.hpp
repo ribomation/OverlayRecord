@@ -110,6 +110,7 @@ namespace ribomation {
 
         Record&     allocateDynamicBuffer() {
             dynamicBuffer = new char[ size() ];
+            std::memset(dynamicBuffer, 0x0, size());
             buffer = dynamicBuffer;
             return *this;
         }
