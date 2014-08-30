@@ -1,11 +1,15 @@
 
 apply plugin: 'cpp'
 
+ext {
+	unitTestExe = 'build/unit-tests'
+}
+
 executables {
     unitTests {
         binaries.all {
             if (toolChain in Gcc) {
-                linker.args '-o', 'build/unit-tests', '-lcppunit', '-ldl'
+                linker.args '-o', unitTestExe, '-lcppunit', '-ldl'
             }
         }
     }
@@ -35,6 +39,9 @@ sources {
 }
 
 
+task test(type: Exec, dependsOn: assemble) {
+	commandLine unitTestExe
+}
 
 
 task docs(type:Exec) {

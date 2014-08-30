@@ -40,7 +40,7 @@ struct HEXConverter_Test : public CppUnit::TestFixture {
     	Record::HEXConverter	hex;
     	hex.toStorage(payload, actual, N);
     	for (size_t k=0; k<N; ++k)
-    	    		CPPUNIT_ASSERT_EQUAL(expected[k], actual[k]);
+    	    CPPUNIT_ASSERT_EQUAL(expected[k], actual[k]);
     }
 
 };
