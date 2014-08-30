@@ -119,6 +119,7 @@ namespace overlay_record {
             if (bufsiz < size()) throw StorageOverflow();
             buffer = buf;
             if (dynamicBuffer != nullptr) disposeDynamicBuffer();
+            return *this;
         }
 
         unsigned    getLastOffset() const {
@@ -609,17 +610,17 @@ namespace overlay_record {
         // -----------------------------------------------------
         // --- Field types
         // -----------------------------------------------------
-        template<int size> using Text =
-        Field<std::string, size, TextConverter<>>;
+        template<int size>
+        using Text = Field<std::string, size, TextConverter<>>;
 
-        template<int size> using TextInteger =
-        Field<int, size, NumericConverter<int, TO_INT>>;
+        template<int size>
+        using TextInteger = Field<int, size, NumericConverter<int, TO_INT>>;
 
-        template<int size> using TextFloat =
-        Field<float, size, NumericConverter<float, TO_FLOAT>>;
+        template<int size>
+        using TextFloat = Field<float, size, NumericConverter<float, TO_FLOAT>>;
 
-        template<typename Type> using BinaryType =
-        Field<Type, sizeof(Type), BinaryConverter<Type>>;
+        template<typename Type>
+        using BinaryType = Field<Type, sizeof(Type), BinaryConverter<Type>>;
 
         using Byte     = BinaryType<char>;
         using Short    = BinaryType<int>;
@@ -634,7 +635,7 @@ namespace overlay_record {
         using QUAD     = BinaryType<long long>;
 
         template<int size>
-        using Blob	   = Field<char*, size, TextConverter<>>;
+        using Blob	   = Field<std::string, size, HEXConverter>;
     };
 
     /**
