@@ -36,7 +36,7 @@ You can install CppUnit, with a command similar to
 Compilation
 -----------
 
-This library is using [Gradle](www.gradle.org) and its wrapper as the build tool. Thta means, there is no need to install yet another tool. just run the provided `gradlew` shell-script. 
+This library is using [Gradle](http://www.gradle.org) and its wrapper as the build tool. Thta means, there is no need to install yet another tool. just run the provided `gradlew` shell-script. 
 
 The library consists of only one HPP file, named `Record.hpp` and can be found in [src/main/incl](./src/main/incl/)
 
