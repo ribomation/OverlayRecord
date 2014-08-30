@@ -135,7 +135,7 @@ namespace overlay_record {
         }
 
         unsigned size() const {
-            if (fields.empty()) throw UnInitialized();
+            if (fields.empty()) throw UnInitialized("No fields defined. Record.hpp:" + __LINE__);
             return bufferSize;
         }
 
@@ -143,7 +143,7 @@ namespace overlay_record {
          * Returns the start address of a record.
          */
         char* begin() const {
-            if (buffer == nullptr) throw UnInitialized();
+            if (buffer == nullptr) throw UnInitialized("Buffer is null. Record.hpp:" + __LINE__);
             return buffer;
         }
 
@@ -159,7 +159,7 @@ namespace overlay_record {
          * It's assumed that sizeof(buf) is sufficient.
          */
         Record& operator <<(char* buf) {
-            if (buffer == nullptr) throw UnInitialized();
+            if (buffer == nullptr) throw UnInitialized("Buffer is null Record.hpp:" + __LINE__);
             std::memcpy(buffer, buf, size());
             return *this;
         }
@@ -413,6 +413,9 @@ namespace overlay_record {
             RecordType     embeddedRecord;
 
             void init(Record* record, unsigned offset) {
+            	static_assert(std::is_default_constructible<RecordType>::value,
+            	             "Requires default-constructible embedded RecordType");
+
                 this->record      = record;
                 this->fieldSize   = embeddedRecord.size();
                 this->fieldOffset = offset;
@@ -430,7 +433,11 @@ namespace overlay_record {
                 init(record, alignField.fieldOffset + (alignStart ? 0 : alignField.fieldSize));
             }
 
-            RecordType*     operator ->() const {
+            RecordType*     operator ->() {
+            	if (embeddedRecord.buffer == nullptr) {
+            		embeddedRecord.buffer = begin();
+            	}
+
                 return &embeddedRecord;
             }
 
