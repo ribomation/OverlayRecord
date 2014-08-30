@@ -2,7 +2,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "Record.hpp"
-using namespace ribomation;
+using namespace overlay_record;
 
 
 struct DummyTest : public CppUnit::TestFixture {

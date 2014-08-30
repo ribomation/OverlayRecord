@@ -8,7 +8,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 
 #include "Record.hpp"
-using namespace ribomation;
+using namespace overlay_record;
 using namespace std;
 
 struct FieldAccess : public CppUnit::TestFixture {

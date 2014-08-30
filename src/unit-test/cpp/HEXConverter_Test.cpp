@@ -9,7 +9,7 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "Record.hpp"
 using namespace std;
-using namespace ribomation;
+using namespace overlay_record;
 
 struct HEXConverter_Test : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE( HEXConverter_Test );

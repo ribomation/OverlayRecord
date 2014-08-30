@@ -19,7 +19,7 @@
 #include <type_traits>
 #include <cstring>
 
-namespace ribomation {
+namespace overlay_record {
 
     // -----------------------------------------------------
     // --- Exceptions

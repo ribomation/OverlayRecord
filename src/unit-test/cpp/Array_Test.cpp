@@ -8,15 +8,15 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 #include "Record.hpp"
-using namespace ribomation;
+using namespace overlay_record;
 using namespace std;
 
 struct Array_Test : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE( Array_Test );
-		CPPUNIT_TEST( unit_test_method );
+		CPPUNIT_TEST( indexing_field_arrays_should_work );
     CPPUNIT_TEST_SUITE_END();
 
-    void unit_test_method() {
+    void indexing_field_arrays_should_work() {
     	struct R : public Record {
     		Text<12>			txtAll = {this};
     		Array<Text<4>, 3>	txt    = {this, txtAll};
