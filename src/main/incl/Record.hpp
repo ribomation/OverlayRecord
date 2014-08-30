@@ -317,7 +317,7 @@ namespace ribomation {
         // --- class Array
         // -----------------------------------------------------
         template<typename ItemType, unsigned numItems>
-        class Array {   //TODO: make it a subclass of FieldBase
+        class Array : public FieldBase {
             ItemType items[numItems];
 
         public:
@@ -326,6 +326,10 @@ namespace ribomation {
             static const unsigned   SIZE = numItems * ItemType::SIZE;
 
             Array(Record* record) {
+            	static_assert(COUNT > 0, "Non-positive number of items");
+            	static_assert(std::is_default_constructible<ItemType>::value,
+            	             "Requires default-constructible elements");
+
                 for (int k = 0; k < COUNT; ++k) {
                     items[k].init(record, record->getLastOffset());
                 }
@@ -333,7 +337,9 @@ namespace ribomation {
 
             template<typename T, unsigned N, typename C>
             Array(Record* record, const Field<T, N, C>& alignField, bool alignStart = true) {
-                if (COUNT < 1) throw IndexOutOfBounds(0, COUNT);
+            	static_assert(COUNT > 0, "Non-positive number of items");
+            	static_assert(std::is_default_constructible<ItemType>::value,
+            	             "Requires default-constructible elements");
 
                 unsigned offset = alignField.fieldOffset + (alignStart ? 0 : alignField.fieldSize);
                 items[0].init(record, offset);
@@ -464,8 +470,11 @@ namespace ribomation {
 
             static std::string fromStorage(char* offset, unsigned size) {
             	std::string  payload(offset, offset + size);
+
             	std::string  result(size, PAD);
-            	for (int k=0; k<payload.size(); ++k) if (payload[k]) result[k] = payload[k];
+            	for (int k=0; k<payload.size(); ++k)
+            		if (payload[k]) result[k] = payload[k];
+
             	return result;
             }
         };
