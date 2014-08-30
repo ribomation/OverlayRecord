@@ -9,6 +9,8 @@
 #define RECORD_HPP_
 
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -493,6 +495,37 @@ namespace ribomation {
             }
         };
 
+        struct HEXConverter {
+        	static void toStorage(const std::string& payload, void* offset, size_t size) {
+        		const size_t	N    = std::min(2 * size, payload.size());
+        		unsigned char*	data = reinterpret_cast<unsigned char*>(offset);
+        		std::memset(data, '\0', size);
+
+        		std::stringstream  buf;
+        		buf >> std::hex;
+        		for (size_t payloadIdx = 0, dataIdx = 0; payloadIdx < N; ++dataIdx) {
+        			const char byteStr[3] = {
+        					payload[payloadIdx++], payload[payloadIdx++], '\0'
+        			};
+
+        			buf.clear(); buf.str(byteStr);
+        			int byteValue = 0; buf >> byteValue;
+        			data[dataIdx] = static_cast<unsigned char>(byteValue);
+        		}
+        	}
+
+        	static std::string fromStorage(void* offset, size_t size) {
+        		unsigned char*	payload = reinterpret_cast<unsigned char*>(offset);
+
+        		std::stringstream  buf;
+        		buf << std::hex << std::setfill('0') << std::uppercase;
+        		for (size_t k=0; k<size; ++k)
+        			buf << std::setw(2) << static_cast<int>( payload[k] );
+
+        		return buf.str();
+        	}
+        };
+
 
         // -----------------------------------------------------
         // --- Character converter functors
@@ -584,7 +617,7 @@ namespace ribomation {
         using QUAD     = BinaryType<long long>;
 
         template<int size>
-        using Blob	   = Field<char, size, TextConverter<>>;
+        using Blob	   = Field<char*, size, TextConverter<>>;
     };
 
     /**
